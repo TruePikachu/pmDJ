@@ -25,6 +25,7 @@ class SmdSong {
 		int				GetTrackCount	() const;
 		const std::vector< SmdTrack >&	Tracks		() const;
 		const smdTrack&			operator[]	(int) const;
+		bool				OutputInUse	(int) const;
 };
 
 class SmdTrack {

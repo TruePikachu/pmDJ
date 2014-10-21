@@ -58,6 +58,28 @@ void writeVarLength(std::ostream &os, long int data) {
 
 //////////
 
+MidiFile::MidiFile() {
+}
+
+MidiFile::MidiFile(std::ifstream& file) {
+	// Check header
+	char buffer[32];
+	file.read(buffer,4);
+	if(strncmp(buffer,"MThd",4))
+		throw runtime_error("Not a MIDI file");
+	readFlipped(file,buffer,4);
+	if(1!=readFlipped(file,2))
+		throw runtime_error("Only type 1 files supported");
+	int trackCount = readFlipped(file,2);
+	if(48!=readFlipped(file,2))
+		throw runtime_error("Only 48 tick/beat files supported");
+	for(int i=0;i<trackCount;i++) {
+		MidiTrack myTrack;
+		myTrack.Read(file);
+		tracks.push_back(myTrack);
+	}
+}
+
 std::vector< MidiTrack >& MidiFile::Tracks() {
 	return tracks;
 }
@@ -77,25 +99,6 @@ const MidiFile& MidiFile::Save(std::ofstream& file) const {
 	for(vector< MidiTrack >::const_iterator it=tracks.begin();it!=tracks.end();++it)
 		it->Write(file);
 	return *this;
-}
-
-MidiFile& MidiFile::Load(std::ifstream& file) {
-	// Check header
-	char buffer[32];
-	file.read(buffer,4);
-	if(strncmp(buffer,"MThd",4))
-		throw runtime_error("Not a MIDI file");
-	readFlipped(file,buffer,4);
-	if(1!=readFlipped(file,2))
-		throw runtime_error("Only type 1 files supported");
-	int trackCount = readFlipped(file,2);
-	if(48!=readFlipped(file,2))
-		throw runtime_error("Only 48 tick/beat files supported");
-	for(int i=0;i<trackCount;i++) {
-		MidiTrack myTrack;
-		myTrack.Read(file);
-		tracks.push_back(myTrack);
-	}
 }
 
 //////////

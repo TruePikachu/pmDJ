@@ -11,12 +11,13 @@ class MidiFile {
 	private:
 		std::vector< MidiTrack > tracks;
 	public:
+					 MidiFile();
+					 MidiFile(std::ifstream&);
 		// Member functions
 		std::vector< MidiTrack >&	Tracks	();
 		const std::vector< MidiTrack >&	Tracks	() const;
 		// File I/O
 		const MidiFile&		Save	(std::ofstream&) const;
-		MidiFile&		Load	(std::ifstream&);
 };
 
 class MidiTrack {

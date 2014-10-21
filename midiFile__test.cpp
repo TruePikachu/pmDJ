@@ -81,10 +81,10 @@ int main() {
 	ok(true,"Save data");
 	is(system("diff -q .test-midi.mid " PKGDIR "/test_data/totaka.mid"),0,"Diff data");
 
-	MidiFile myOtherFile;
+	MidiFile *myOtherFile;
 	try {
 		ifstream myFileMid(".test-midi.mid");
-		myOtherFile.Load(myFileMid);
+		myOtherFile = new MidiFile(myFileMid);
 		myFileMid.close();
 	} catch (exception& e) {
 		diag("Exception: ", e.what());
@@ -96,7 +96,7 @@ int main() {
 
 	try {
 		ofstream myFileMid(".test-midi.mid");
-		myOtherFile.Save(myFileMid);
+		myOtherFile->Save(myFileMid);
 		myFileMid.close();
 	} catch (exception& e) {
 		diag("Exception: ", e.what());
@@ -105,5 +105,6 @@ int main() {
 	}
 	is(system("diff -q .test-midi.mid " PKGDIR "/test_data/totaka.mid"),0,"Rediff data");
 	system("rm .test-midi.mid");
+	delete myOtherFile;
 	return exit_status();
 }

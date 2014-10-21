@@ -1,5 +1,5 @@
 #include "instMap.hpp"
-#include "midiFile.hpp"
+#include "midiWrite.hpp"
 #include "smdRead.hpp"
 #include <algorithm>
 #include <cstring>

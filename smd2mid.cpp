@@ -1,4 +1,4 @@
-#include "midiFile.hpp"
+#include "midiWrite.hpp"
 #include "smdRead.hpp"
 #include <cstdio>
 #include <cstring>

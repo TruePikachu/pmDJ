@@ -1,5 +1,5 @@
-#ifndef __MIDIFILE_HPP
-#define __MIDIFILE_HPP
+#ifndef __MIDIWRITE_HPP
+#define __MIDIWRITE_HPP
 class MidiFile;
 class MidiTrack;
 class MidiEvent;

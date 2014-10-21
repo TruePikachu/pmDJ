@@ -59,5 +59,19 @@ int main(int argc, char *argv[]) {
 			}		
 	}
 
+	// Make MIDI file
+	smdMidi myMidi;
+	for(vector< InFile >::const_iterator it=inFiles.begin();it!=inFiles.end();++it) {
+		ifstream myHandle(it->filename.c_str());
+		smdSong mySmd(myHandle);
+		myHandle.close();
+		myMidi.AddToFile(mySmd,it->loopCount,it->trimAmount);
+	}
+
+	// Write MIDI file
+	ofstream myHandle(argv[argc-1]);
+	myMidi.Save(myHandle);
+	myHandle.close();
+
 	return 0;
 }

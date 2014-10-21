@@ -2,7 +2,6 @@
 #include "instMap.hpp"
 #include "midiFile.hpp"
 #include "smdFile.hpp"
-#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <vector>
@@ -16,7 +15,6 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 	InstrumentMap im;
 	int latestPosition = absoluteWriteTime;
 	for(vector< smdTrack >::const_iterator track=song.Tracks().begin();track!=song.Tracks().end();++track) {
-		cerr << "Doing tID=" << track->GetTrackID() << endl;
 		int lC = loops+1;
 		// Figure out what MIDI channel to use
 		int midiChannel = track->GetOutputID();

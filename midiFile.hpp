@@ -24,13 +24,17 @@ class MidiTrack {
 	private:
 		friend class MidiFile;
 		std::vector< MidiEvent >	events;
+		int				padToTime;
 		const MidiTrack&Write	(std::ofstream&) const;
 		MidiTrack&	Read	(std::ifstream&);
 	public:
+				 MidiTrack	();
 		// Member functions
 		std::vector< MidiEvent >&	Events	();
 		const std::vector< MidiEvent >&	Events	() const;
 		MidiTrack&	AddEvent	(MidiEvent);
+		int		GetPadTime	() const;
+		MidiTrack&	SetPadTime	(int);
 };
 
 class MidiEvent {

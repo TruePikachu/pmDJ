@@ -181,7 +181,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-#pmDJ_SOURCES = pmDJ.cpp smdRead.cpp midiWrite.cpp
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdRead.cpp midiWrite.cpp instMap.cpp
 checkSmds_SOURCES = checkSmds.cpp smdRead.cpp

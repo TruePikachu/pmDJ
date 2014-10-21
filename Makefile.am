@@ -1,8 +1,6 @@
-# Some of these are from pmd2mid, which I'm just going to toss into here for now
 bin_PROGRAMS = smdDump smd2mid
 noinst_PROGRAMS = checkSmds
 check_PROGRAMS = test_midiFile test_smdFile
-#pmDJ_SOURCES = pmDJ.cpp smdRead.cpp midiWrite.cpp
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdRead.cpp midiWrite.cpp instMap.cpp
 checkSmds_SOURCES = checkSmds.cpp smdRead.cpp

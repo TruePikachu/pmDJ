@@ -1,8 +1,9 @@
-bin_PROGRAMS = smdDump smd2mid
+bin_PROGRAMS = smdDump smd2mid pmDJ
 noinst_PROGRAMS = checkSmds
 check_PROGRAMS = test_midiFile test_smdFile test_smdMidi
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
+pmDJ_SOURCES = pmDJ.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++

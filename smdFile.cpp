@@ -185,4 +185,233 @@ const smdEvent& smdTrack::operator[](int i) const {
 }
 
 //////////
+int smdEvent::prevWaitLength;
 
+smdEvent::smdEvent(std::ifstream& file) {
+	char readByte;
+	file.read(&readByte,1);
+	eventCode = readByte;
+	if(eventCode <= 0x7F) {
+		// NOTE_PLAY
+		file.read(&readByte,1);
+		params.push_back(readByte);
+		switch(params[0]&0xC0) {
+			case 0x80:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case 0x40:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case 0x00:
+				break;
+			default:
+				throw runtime_error("Bad flags");
+		}
+	} else if (eventCode > 0x8F)
+		switch(eventCode) {
+			case WAIT_2BYTE:
+			case 0xD6:
+			case SET_BEND:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case WAIT_ADD:
+			case WAIT_1BYTE:
+			case SET_OCTAVE:
+			case SET_TEMPO:
+			case 0xA9:
+			case 0xAA:
+			case SET_SAMPLE:
+			case SET_MODU:
+			case 0xBF:
+			case 0xDB:
+			case SET_VOLUME:
+			case SET_XPRESS:
+			case SET_PAN:
+			case 0xF4:
+			case 0xF6:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case WAIT_AGAIN:
+			case TRACK_END:
+			case LOOP_POINT:
+			case 0xC0:
+				break;
+			default:
+				throw runtime_error("Bad opcode");
+		}
+	if((GetType()==WAIT_1BYTE) || (GetType()==WAIT_2BYTE))
+		prevWaitLength = TickLength();
+	if(GetType()==WAIT_ADD)
+		prevWaitLength += (signed int8_t)params[0];
+	waitAgainLength = prevWaitLength;
+}
+
+static const char* NoteNames[12] =
+{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+
+std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
+	char buffer[200];
+	sprintf(buffer,"0x%02X",p.eventCode);
+	os << buffer;
+	for(int i=0;i<3;i++)
+		if(i>=p.params.size())
+			os << "     ";
+		else {
+			sprintf(buffer," 0x%02X",p.params[i]);
+			os << buffer;
+		}
+	os << '\t';
+
+	if(p.eventCode <= 0x7F) {
+		os << "Note: Velocity=" << (int)p.eventCode << ", ";
+		switch((p.params[0]>>4) & 0x3) {
+			case 0:
+				os << "Oct-2, ";
+				break;
+			case 1:
+				os << "Oct-1, ";
+				break;
+			case 3:
+				os << "Oct+1, ";
+				break;
+		}
+		if(p.params[0]&0xF < 12)
+			os << "Key=" << NoteNames[p.params[0]&0xF];
+		else
+			throw runtime_error("Bad key");
+		switch(p.params[0]&0xC0) {
+			case 0x00:
+				break;
+			case 0x40:
+				os << "Length=" << (int)p.params[0] << "/192";
+				break;
+			case 0x80:
+				os << "Length=" << (int)(p.params[0]<<8 + p.params[1]) << "/192";
+		}
+	} else
+		switch(p.GetType()) {
+			case smdEvent::DELTA_TIME:
+				os << "Delta: ";
+				os << "1/" << (2<<((p.eventCode&0xF)/3) + ((p.eventCode&0xF)%3 == 1));
+				switch((p.eventCode&0xF)%3) {
+					case 0:
+						os << " note";
+						break;
+					case 1:
+						os << " dot";
+						break;
+					case 2:
+						os << " trip";
+						break;
+				}
+				break;
+			case smdEvent::WAIT_AGAIN:
+				os << "WaitAgain: " << p.waitAgainLength << "/192";
+				break;
+			case smdEvent::WAIT_ADD:
+				os << "WaitAdd: " << p.waitAgainLength << "/192 (d=" << (int)(int8_t)p.params[0] << "/192)";
+				break;
+			case smdEvent::WAIT_1BYTE:
+				sprintf(buffer,"Wait: 0x%02X ( ",p.params[0]);
+				os << buffer;
+				os << (int)p.params[0] << "/192 )";
+				break;
+			case smdEvent::WAIT_2BYTE:
+				sprintf(buffer,"Wait: 0x%02X%02X ( ",p.params[0],p.params[1]);
+				os << buffer;
+				os << (int)p.params[0] + (int)p.params[1]*256 << "/192 )";
+				break;
+			case smdEvent::TRACK_END:
+				os << "-- END --";
+				break;
+			case smdEvent::LOOP_POINT:
+				os << "-- LOOP --";
+				break;
+			case smdEvent::SET_OCTAVE:
+				os << "Octave: " << (int)p.params[0];
+				break;
+			case smdEvent::SET_TEMPO:
+				os << "Tempo: " << (int)p.params[0] << "BPM";
+				break;
+			case smdEvent::SET_SAMPLE:
+				os << "Instrument: " << (int)p.params[0];
+				break;
+			case smdEvent::SET_MODU:
+				os << "Modulation: " << (int)p.params[0];
+				break;
+			case smdEvent::SET_BEND:
+				os << "Bend: " << (int16_t)(p.params[0]*256 + p.params[1]) << " cents";
+				break;
+			case smdEvent::SET_VOLUME:
+				os << "Volume: " << (int)p.params[0];
+				break;
+			case smdEvent::SET_XPRESS:
+				os << "Express: " << (int)p.params[0];
+				break;
+			case smdEvent::SET_PAN:
+				os << "Pan: " << (int)(p.params[0] - 0x40);
+				break;
+			default:
+				sprintf(buffer,"UNK_%2X",p.eventCode);
+				os << buffer;
+		}
+	os << endl;
+	return os;
+}
+
+smdEvent::EventType smdEvent::GetType() const {
+	if(eventCode <= 0x7F)
+		return NOTE_PLAY;
+	if(eventCode <= 0x8F)
+		return DELTA_TIME;
+	switch(eventCode) {
+		case WAIT_AGAIN:
+		case WAIT_ADD:
+		case WAIT_1BYTE:
+		case WAIT_2BYTE:
+		case TRACK_END:
+		case LOOP_POINT:
+		case SET_OCTAVE:
+		case SET_TEMPO:
+		case SET_SAMPLE:
+		case SET_MODU:
+		case SET_BEND:
+		case SET_VOLUME:
+		case SET_XPRESS:
+		case SET_PAN:
+			return (EventType)eventCode;
+		default:
+			return GENERAL_UNKNOWN;
+	}
+}
+
+uint8_t smdEvent::GetEventCode() const {
+	return eventCode;
+}
+
+int smdEvent::GetParamCount() const {
+	return params.size();
+}
+
+uint8_t smdEvent::Param(int i) const {
+	return params[i];
+}
+
+static const int DTimeTickTable[16] =
+{96,72,64,48,36,32,24,18,16,12,9,8,6,4,3,2};
+
+int smdEvent::TickLength() const {
+	switch(GetType()) {
+		case DELTA_TIME:
+			return DTimeTickTable[eventCode-0x80];
+		case WAIT_AGAIN:
+		case WAIT_ADD:
+			return waitAgainLength;
+		case WAIT_1BYTE:
+			return params[0];
+		case WAIT_2BYTE:
+			return params[0] + 256*params[1];
+		default:
+			return 0;
+	}
+}

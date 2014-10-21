@@ -3,6 +3,8 @@
 #include "midiFile.hpp"
 #include "smdFile.hpp"
 #include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <vector>
 using namespace std;
 
@@ -12,9 +14,10 @@ smdMidi::smdMidi() : MidiFile() {
 
 smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 	InstrumentMap im;
-	loops++;
 	int latestPosition = absoluteWriteTime;
 	for(vector< smdTrack >::const_iterator track=song.Tracks().begin();track!=song.Tracks().end();++track) {
+		cerr << "Doing tID=" << track->GetTrackID() << endl;
+		int lC = loops+1;
 		// Figure out what MIDI channel to use
 		int midiChannel = track->GetOutputID();
 		if(midiChannel>=9)
@@ -38,9 +41,9 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 		bool doesLoop = false;
 		int sampleOctOff = 0;
 		int instGroup = song.GetInstrumentGroup();
-		vector< smdEvent >::const_iterator loopToPos=track->Events.begin();
+		vector< smdEvent >::const_iterator loopToPos=track->Events().begin();
 
-		for(vector< smdEvent >::const_iterator event=track->Events.begin();loops;++event)
+		for(vector< smdEvent >::const_iterator event=track->Events().begin();lC;++event)
 			switch(event->GetType()) {
 				case smdEvent::NOTE_PLAY:
 					{
@@ -63,7 +66,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 							case 0x8:
 								current_length = event->Param(1)*256 + event->Param(2);
 						}
-						int key = (sampleOctOff + current_octave)*12 + event->Param(0)&0xF;
+						int key = (sampleOctOff + current_octave)*12 + (event->Param(0)&0xF);
 						if(midiChannel==9)
 							key=im.MapDrumKey(instGroup,key);
 						mTrk.Events().push_back(MidiEvent(current_time,MidiEvent::NOTE_ON,midiChannel,key,event->GetEventCode()));
@@ -75,14 +78,14 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 				case smdEvent::WAIT_ADD:
 				case smdEvent::WAIT_2BYTE:
 				case smdEvent::WAIT_1BYTE:
-					current_time += (*it).TickLength();
+					current_time += event->TickLength();
 					break;
 				case smdEvent::TRACK_END:
-					if(--loops)
+					if(--lC)
 						if(doesLoop)
 							event=loopToPos;
 						else
-							loops=0;
+							lC=0;
 					break;
 				case smdEvent::LOOP_POINT:
 					mTrk.Events().push_back(MidiEvent(current_time,0x6,4,"LOOP"));
@@ -102,7 +105,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 						mTrk.Events().push_back(MidiEvent(current_time,0x51,3,buf));
 					} break;
 				case smdEvent::SET_SAMPLE:
-					mTrk.Events().push_back(MidiEvent(current_time,MidiEvent::PROGRAM,midiChannel,im.MapInstrument(instGroup,event->Param(0)),0));
+					mTrk.Events().push_back(MidiEvent(current_time,MidiEvent::PROGRAM,midiChannel,im.MapInstrument(instGroup,event->Param(0))));
 					sampleOctOff = im.MapInstrumentOff(instGroup,event->Param(0));
 					break;
 				case smdEvent::SET_MODU:
@@ -141,6 +144,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
 			}
 		if(latestPosition<current_time)
 			latestPosition=current_time;
+		mTrk.SetPadTime(current_time);
 	}
 	absoluteWriteTime = latestPosition;
 	return *this;

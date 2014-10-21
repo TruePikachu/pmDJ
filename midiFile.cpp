@@ -176,6 +176,24 @@ MidiTrack& MidiTrack::SetPadTime(int i) {
 	return *this;
 }
 
+MidiTrack& MidiTrack::StopNotes(int when) {
+	bool noteOn[128][16];
+	for(int i=0;i<128;i++)
+		for(int j=0;j<16;j++)
+			noteOn[i][j]=false;
+	for(vector< MidiEvent >::const_iterator it=events.begin();it!=events.end();++it)
+		if(it->absoluteTime < when)
+			if(it->eventType==MidiEvent::NOTE_ON)
+				noteOn[it->param1][it->channel]=true;
+			else if(it->eventType==MidiEvent::NOTE_OFF)
+				noteOn[it->param1][it->channel]=false;
+	for(int i=0;i<128;i++)
+		for(int j=0;j<16;j++)
+			if(noteOn[i][j])
+				events.push_back(MidiEvent(when,MidiEvent::NOTE_OFF,j,i,0x7F));
+	return *this;
+}
+
 //////////
 int MidiEvent::wroteTime;
 long int MidiEvent::makeIndex = 0;
@@ -320,6 +338,10 @@ MidiEvent& MidiEvent::operator=(MidiEvent other) {
 
 MidiEvent::EventType MidiEvent::GetType() const {
 	return eventType;
+}
+
+int MidiEvent::AbsoluteTime() const {
+	return absoluteTime;
 }
 
 bool MidiEvent::operator<(const MidiEvent&other) const {

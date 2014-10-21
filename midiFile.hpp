@@ -35,6 +35,7 @@ class MidiTrack {
 		MidiTrack&	AddEvent	(MidiEvent);
 		int		GetPadTime	() const;
 		MidiTrack&	SetPadTime	(int);
+		MidiTrack&	StopNotes	(int when);
 };
 
 class MidiEvent {
@@ -72,6 +73,7 @@ class MidiEvent {
 		MidiEvent&	operator=	(MidiEvent);
 
 		EventType	GetType		() const;
+		int		AbsoluteTime	() const;
 		bool		operator<	(const MidiEvent&) const;
 };
 

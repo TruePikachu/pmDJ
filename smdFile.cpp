@@ -275,7 +275,7 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 				os << "Oct+1, ";
 				break;
 		}
-		if(p.params[0]&0xF < 12)
+		if((p.params[0]&0xF) < 12)
 			os << "Key=" << NoteNames[p.params[0]&0xF];
 		else
 			throw runtime_error("Bad key");
@@ -283,10 +283,10 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 			case 0x00:
 				break;
 			case 0x40:
-				os << "Length=" << (int)p.params[0] << "/192";
+				os << ", Length=" << (int)p.params[0] << "/192";
 				break;
 			case 0x80:
-				os << "Length=" << (int)(p.params[0]<<8 + p.params[1]) << "/192";
+				os << ", Length=" << (int)(p.params[0]<<8 + p.params[1]) << "/192";
 		}
 	} else
 		switch(p.GetType()) {
@@ -317,7 +317,7 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 				os << (int)p.params[0] << "/192 )";
 				break;
 			case smdEvent::WAIT_2BYTE:
-				sprintf(buffer,"Wait: 0x%02X%02X ( ",p.params[0],p.params[1]);
+				sprintf(buffer,"Wait: 0x%02X%02X ( ",p.params[1],p.params[0]);
 				os << buffer;
 				os << (int)p.params[0] + (int)p.params[1]*256 << "/192 )";
 				break;

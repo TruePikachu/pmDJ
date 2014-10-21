@@ -158,6 +158,6 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 			track->StopNotes(latestPosition-trim);
 		}
 	}
-	absoluteWriteTime = latestPosition;
+	absoluteWriteTime = latestPosition - trim;
 	return *this;
 }

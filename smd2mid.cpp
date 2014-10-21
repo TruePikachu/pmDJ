@@ -1,5 +1,6 @@
-#include "midiWrite.hpp"
-#include "smdRead.hpp"
+#include "midiFile.hpp"
+#include "smdFile.hpp"
+#include "smdMidi.hpp"
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -7,13 +8,6 @@
 #include <stdint.h>
 #include <string>
 using namespace std;
-
-ofstream& WriteByte(ofstream&,uint8_t);
-ofstream& WriteWord(ofstream&,uint16_t);
-ofstream& WriteDWord(ofstream&,uint32_t);
-ofstream& WriteLong(ofstream&,long unsigned);
-
-
 
 int main(int argc, char *argv[]) {
 	if(argc < 3 || argc > 4) {
@@ -25,15 +19,17 @@ int main(int argc, char *argv[]) {
 	ifstream smdFile(argv[1]);
 	smdSong mySong(smdFile);
 
-	unsigned loops = 1;
+	unsigned loops = 0;
 	if(argc==4)
 		sscanf(argv[3],"%u",&loops);
 
+	// Process file
+	smdMidi myMidi;
+	myMidi.AddToFile(mySong,loops);
+
 	// Write file
 	ofstream midFile(argv[2]);
-	MidiFile myMidi;
-	myMidi.LoadSMD(mySong,loops);
-	if (myMidi.WriteFile(midFile))
-		return 0;
-	return 1;
+	myMidi.Save(midFile);
+	midFile.close();
+	return 0;
 }

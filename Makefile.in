@@ -57,8 +57,8 @@ PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdRead.$(OBJEXT)
 checkSmds_OBJECTS = $(am_checkSmds_OBJECTS)
 checkSmds_LDADD = $(LDADD)
-am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdRead.$(OBJEXT) \
-	midiWrite.$(OBJEXT) instMap.$(OBJEXT)
+am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdFile.$(OBJEXT) \
+	midiFile.$(OBJEXT) instMap.$(OBJEXT) smdMidi.$(OBJEXT)
 smd2mid_OBJECTS = $(am_smd2mid_OBJECTS)
 smd2mid_LDADD = $(LDADD)
 am_smdDump_OBJECTS = smdDump.$(OBJEXT) smdFile.$(OBJEXT)
@@ -189,7 +189,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
-smd2mid_SOURCES = smd2mid.cpp smdRead.cpp midiWrite.cpp instMap.cpp
+smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdRead.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
@@ -310,7 +310,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile__test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiWrite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smd2mid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdDump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile.Po@am__quote@

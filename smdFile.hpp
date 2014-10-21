@@ -1,8 +1,8 @@
 #ifndef __SMDFILE_HPP
 #define __SMDFILE_HPP
-class SmdSong;
-class SmdTrack;
-class SmdEvent;
+class smdSong;
+class smdTrack;
+class smdEvent;
 #include <fstream>
 #include <ostream>
 #include <stdint.h>
@@ -12,31 +12,31 @@ class SmdEvent;
 // TODO Empty constructors and data-writing functions are not prototyped until
 // we have a lot more data on unknown stuff
 
-class SmdSong {
+class smdSong {
 	private:
 		std::string		name;
-		std::vector< SmdTrack >	tracks;
+		std::vector< smdTrack >	tracks;
 		int			instrumentGroup;
-		friend std::ostream& operator<<(std::ostream&, const SmdSong&);
+		friend std::ostream& operator<<(std::ostream&, const smdSong&);
 	public:
 						 smdSong	(std::ifstream&);
 		std::string			GetName		() const;
 		int				GetInstrumentGroup() const;
 		int				GetTrackCount	() const;
-		const std::vector< SmdTrack >&	Tracks		() const;
+		const std::vector< smdTrack >&	Tracks		() const;
 		const smdTrack&			operator[]	(int) const;
 		bool				OutputInUse	(int) const;
 };
 
-class SmdTrack {
+class smdTrack {
 	private:
 		friend class smdSong;
 		int				trackID;
 		int				outputID;
 		int				instrumentGroup;
-		std::vector< SmdEvent >		events;
-						 smdTrack(std::ifstream&);
-		friend std::ostream& operator<<(std::ostream&, const SmdTrack&);
+		std::vector< smdEvent >		events;
+						 smdTrack(std::ifstream&,int);
+		friend std::ostream& operator<<(std::ostream&, const smdTrack&);
 
 	public:
 		int				GetTrackID	() const;
@@ -44,11 +44,11 @@ class SmdTrack {
 		int				GetInstrumentGroup() const;
 		bool				IsDrum		() const;
 		int				GetEventCount	() const;
-		const std::vector< SmdEvent >&	Events		() const;
-		const SmdEvent&			operator[]	(int) const;
+		const std::vector< smdEvent >&	Events		() const;
+		const smdEvent&			operator[]	(int) const;
 };
 
-class SmdEvent {
+class smdEvent {
 	public:
 		typedef enum {
 			NOTE_PLAY,
@@ -76,9 +76,9 @@ class SmdEvent {
 		std::vector< uint8_t > params;
 		int waitAgainLength;
 				 smdEvent	(std::ifstream&);
-		friend std::ostream& operator<<(std::ostream&, const SmdEvent&);
+		friend std::ostream& operator<<(std::ostream&, const smdEvent&);
 	public:
-		EVENT_TYPE	GetType		() const;
+		EventType	GetType		() const;
 		uint8_t		GetEventCode	() const;
 		int		GetParamCount	() const;
 		uint8_t		Param		(int) const;

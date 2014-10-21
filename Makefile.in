@@ -54,7 +54,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdRead.$(OBJEXT)
+am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdFile.$(OBJEXT)
 checkSmds_OBJECTS = $(am_checkSmds_OBJECTS)
 checkSmds_LDADD = $(LDADD)
 am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdFile.$(OBJEXT) \
@@ -190,7 +190,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
-checkSmds_SOURCES = checkSmds.cpp smdRead.cpp
+checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
 test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
@@ -316,7 +316,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile__test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi__test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdRead.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

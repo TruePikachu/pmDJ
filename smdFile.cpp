@@ -139,7 +139,14 @@ std::ostream& operator<<(std::ostream& os, const smdTrack& p) {
 	int loopPos = -1;
 	for(int i=0;i<p.events.size();i++) {
 		sprintf(whenBuffer,"%6u:%1u.%02u %-12u",when/192 +1,(when%192)/48 +1,(when%48),when);
-		os << i << '\t' << whenBuffer << '\t' << p.events[i];
+		try {
+			os << i << '\t' << whenBuffer << '\t' << p.events[i];
+		} catch (exception& e) {
+			stringstream errorMessage;
+			char buffer[16];
+			errorMessage << "operator<<(smdTrack): " << e.what() << " (trackID=" << p.trackID << " @ " << whenBuffer << ')';
+			throw runtime_error(errorMessage.str());
+		}
 		if(p.events[i].GetType() == smdEvent::LOOP_POINT)
 			loopPos = when;
 		when += p.events[i].TickLength();

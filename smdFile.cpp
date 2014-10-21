@@ -3,6 +3,7 @@
 #include <exception>
 #include <fstream>
 #include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <stdint.h>
 #include <string>
@@ -53,6 +54,7 @@ smdSong::smdSong(std::ifstream& file) {
 		file.seekg(myStart+0x80);
 		for(int i=0;i<nTrackChunks;i++)
 			tracks.push_back(smdTrack(file,instrumentGroup));
+		// TODO try/catch block because of issue #1
 	}
 }
 
@@ -83,6 +85,104 @@ bool smdSong::OutputInUse(int n) const {
 }
 
 //////////
+
+smdTrack::smdTrack(std::ifstream& file, int instrumentGroup) : instrumentGroup(instrumentGroup) {
+	off_t myStart = file.tellg();
+	{ // Check magic number
+		char magic[4];
+		file.read(magic,sizeof(magic));
+		if(strncmp(magic,"trk ",4))
+			throw runtime_error("Invalid SMD track header");
+	}
+	size_t dataLen;
+	{ // Track data length
+		file.seekg(myStart+0x0C);
+		uint32_t rDataLen;
+		file.read((char*)&rDataLen,4);
+		dataLen = rDataLen;
+	}
+	{ // ID numbers
+		char idNum[2];
+		file.read(idNum,2);
+		trackID = idNum[0];
+		outputID = idNum[1];
+	}
+	{ // Track events
+		file.seekg(myStart+0x14);
+		smdEvent::EventType prevType;
+		do {
+			off_t startPos = file.tellg();
+			try {
+				if(startPos > myStart+0x10+dataLen)
+					throw runtime_error("Read past end of track");
+				smdEvent newEvent(file);
+				prevType = newEvent.GetType();
+				events.push_back(newEvent);
+			} catch (exception& e) {
+				stringstream errorMessage;
+				char buffer[16];
+				sprintf(buffer,"0x%08X",startPos);
+				errorMessage << "smdTrack::smdTrack(): " << e.what() << " (trackID=" << trackID << ",startPos=" << buffer << ')';
+				throw runtime_error(errorMessage.str());
+			}
+		} while (prevType != smdEvent::TRACK_END);
+	}
+	// Cue to end of track
+	file.seekg(myStart+0x10+dataLen+((dataLen%4)?(4-(dataLen%4)):0));
+}
+
+std::ostream& operator<<(std::ostream& os, const smdTrack& p) {
+	os << "tID=" << p.trackID << ", oID=" << p.outputID << endl;
+	os << "Events: (" << p.events.size() << " count)\n";
+	int when = 0;
+	char whenBuffer[64];
+	int loopPos = -1;
+	for(int i=0;i<p.events.size();i++) {
+		sprintf(whenBuffer,"%6u:%1u.%02u %-12u",when/192 +1,(when%192)/48 +1,(when%48),when);
+		os << i << '\t' << whenBuffer << '\t' << p.events[i];
+		if(p.events[i].GetType() == smdEvent::LOOP_POINT)
+			loopPos = when;
+		when += p.events[i].TickLength();
+	}
+	os << "(end events for tID=" << p.trackID;
+
+	if(loopPos!=-1)
+		os << ", LOOP=" << ((when-loopPos)/192) << ':' << ((when-loopPos)%192)/48 << '.' << ((when-loopPos)%48);
+	os << ")\n";
+	return os;
+}
+
+int smdTrack::GetTrackID() const {
+	return trackID;
+}
+
+int smdTrack::GetOutputID() const {
+	return outputID;
+}
+
+int smdTrack::GetInstrumentGroup() const {
+	return instrumentGroup;
+}
+
+bool smdTrack::IsDrum() const {
+	for(vector< smdEvent >::const_iterator it=events.begin();it!=events.end();++it)
+		if(it->GetType() == smdEvent::SET_SAMPLE)
+			if(it->params[0] >= 0x7C)
+				return true;
+	return false;
+}
+
+int smdTrack::GetEventCount() const {
+	return events.size();
+}
+
+const std::vector< smdEvent >& smdTrack::Events() const {
+	return events;
+}
+
+const smdEvent& smdTrack::operator[](int i) const {
+	return events[i];
+}
 
 //////////
 

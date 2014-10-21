@@ -1,4 +1,4 @@
-#include "smdRead.hpp"
+#include "smdFile.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>

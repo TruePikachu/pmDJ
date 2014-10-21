@@ -1,5 +1,6 @@
 #include "midiFile.hpp"
 #include <algorithm>
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -267,7 +268,11 @@ MidiEvent::MidiEvent(std::ifstream &file) {
 			eventType=BEND;
 			break;
 		default:
-			throw runtime_error("Event type not supported");
+			{
+				char buffer[64];
+				sprintf(buffer,"Event type 0x%1X not supported",byte1[0]/16);
+			throw runtime_error(buffer);
+			}
 	}
 	switch(eventType) {
 		case NOTE_ON:

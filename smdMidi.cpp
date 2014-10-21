@@ -11,7 +11,7 @@ smdMidi::smdMidi() : MidiFile() {
 	absoluteWriteTime = 0;
 }
 
-smdMidi& smdMidi::AddToFile(const smdSong& song, int loops) {
+smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 	InstrumentMap im;
 	int latestPosition = absoluteWriteTime;
 	for(vector< smdTrack >::const_iterator track=song.Tracks().begin();track!=song.Tracks().end();++track) {

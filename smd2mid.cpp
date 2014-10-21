@@ -19,13 +19,13 @@ int main(int argc, char *argv[]) {
 	ifstream smdFile(argv[1]);
 	smdSong mySong(smdFile);
 
-	unsigned loops = 0;
+	unsigned loops = 1;
 	if(argc==4)
 		sscanf(argv[3],"%u",&loops);
 
 	// Process file
 	smdMidi myMidi;
-	myMidi.AddToFile(mySong,loops);
+	myMidi.AddToFile(mySong,loops-1);
 
 	// Write file
 	ofstream midFile(argv[2]);

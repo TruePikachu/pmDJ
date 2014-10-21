@@ -145,7 +145,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 		mTrk.SetPadTime(current_time);
 	}
 	// Trim the MIDI data
-	{
+	if(trim){
 		for(vector< MidiTrack >::iterator track=Tracks().begin();track!=Tracks().end();++track) {
 			vector< MidiEvent >::iterator event=track->Events().begin();
 			do {
@@ -158,6 +158,6 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 			track->StopNotes(latestPosition-trim);
 		}
 	}
-	absoluteWriteTime = latestPosition;
+	absoluteWriteTime = latestPosition - trim;
 	return *this;
 }

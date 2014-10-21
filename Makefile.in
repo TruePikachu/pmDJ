@@ -33,7 +33,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT)
+bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT) pmDJ$(EXEEXT)
 noinst_PROGRAMS = checkSmds$(EXEEXT)
 check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
 	test_smdMidi$(EXEEXT)
@@ -57,6 +57,10 @@ PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdFile.$(OBJEXT)
 checkSmds_OBJECTS = $(am_checkSmds_OBJECTS)
 checkSmds_LDADD = $(LDADD)
+am_pmDJ_OBJECTS = pmDJ.$(OBJEXT) smdFile.$(OBJEXT) midiFile.$(OBJEXT) \
+	instMap.$(OBJEXT) smdMidi.$(OBJEXT)
+pmDJ_OBJECTS = $(am_pmDJ_OBJECTS)
+pmDJ_LDADD = $(LDADD)
 am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdFile.$(OBJEXT) \
 	midiFile.$(OBJEXT) instMap.$(OBJEXT) smdMidi.$(OBJEXT)
 smd2mid_OBJECTS = $(am_smd2mid_OBJECTS)
@@ -83,10 +87,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(checkSmds_SOURCES) $(smd2mid_SOURCES) $(smdDump_SOURCES) \
-	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
-	$(test_smdMidi_SOURCES)
-DIST_SOURCES = $(checkSmds_SOURCES) $(smd2mid_SOURCES) \
+SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
+	$(smdDump_SOURCES) $(test_midiFile_SOURCES) \
+	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
+DIST_SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
 	$(smdDump_SOURCES) $(test_midiFile_SOURCES) \
 	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
 HEADERS = $(noinst_HEADERS)
@@ -190,6 +194,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
+pmDJ_SOURCES = pmDJ.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
@@ -284,6 +289,9 @@ clean-noinstPROGRAMS:
 checkSmds$(EXEEXT): $(checkSmds_OBJECTS) $(checkSmds_DEPENDENCIES) 
 	@rm -f checkSmds$(EXEEXT)
 	$(CXXLINK) $(checkSmds_OBJECTS) $(checkSmds_LDADD) $(LIBS)
+pmDJ$(EXEEXT): $(pmDJ_OBJECTS) $(pmDJ_DEPENDENCIES) 
+	@rm -f pmDJ$(EXEEXT)
+	$(CXXLINK) $(pmDJ_OBJECTS) $(pmDJ_LDADD) $(LIBS)
 smd2mid$(EXEEXT): $(smd2mid_OBJECTS) $(smd2mid_DEPENDENCIES) 
 	@rm -f smd2mid$(EXEEXT)
 	$(CXXLINK) $(smd2mid_OBJECTS) $(smd2mid_LDADD) $(LIBS)
@@ -310,6 +318,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile__test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pmDJ.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smd2mid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdDump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile.Po@am__quote@

@@ -5,6 +5,8 @@ class InstrumentMap;
 
 class InstrumentMap {
 	private:
+		bool	drumMapOK;
+		bool	instMapOK;
 		std::map< int, std::map< int, int> > DrumKeyMap;
 		std::map< int, std::map< int, int> > InstMap;
 		std::map< int, std::map< int, int> > OctMap;

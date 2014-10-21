@@ -117,6 +117,8 @@ const MidiTrack& MidiTrack::Write(std::ofstream& file) const {
 		it->Write(file);
 	// Write TRACKEND
 	MidiEvent TrackEnd(MidiEvent::wroteTime,0x2F,0,"");
+	if(TrackEnd.absoluteTime < padToTime)
+		TrackEnd.absoluteTime = padToTime;
 	TrackEnd.Write(file);
 	// Write size
 	off_t endOff = file.tellp();
@@ -149,6 +151,9 @@ MidiTrack& MidiTrack::Read(std::ifstream& file) {
 	return *this;
 }
 
+MidiTrack::MidiTrack() : padToTime(0) {
+}
+
 std::vector< MidiEvent >& MidiTrack::Events() {
 	return events;
 }
@@ -159,6 +164,15 @@ const std::vector< MidiEvent >& MidiTrack::Events() const {
 
 MidiTrack& MidiTrack::AddEvent(MidiEvent that) {
 	events.push_back(that);
+	return *this;
+}
+
+int MidiTrack::GetPadTime() const {
+	return padToTime;
+}
+
+MidiTrack& MidiTrack::SetPadTime(int i) {
+	padToTime = i;
 	return *this;
 }
 

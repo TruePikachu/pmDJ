@@ -6,7 +6,7 @@ using namespace std;
 
 InstrumentMap::InstrumentMap() {
 	// default programs
-	FILE* pFile = fopen("./prog_table.txt","r");
+	FILE* pFile = fopen(PKGDIR "/prog_table.txt","r");
 	while(!feof(pFile)) {
 		int aa,instID,val3,val4;
 		fscanf(pFile,"%X %X %X %d",&aa,&instID,&val3,&val4);
@@ -18,7 +18,7 @@ InstrumentMap::InstrumentMap() {
 	}
 	fclose(pFile);
 	// prog_table
-	pFile = fopen("./prog_table.txt","r");
+	pFile = fopen(PKGDIR "/prog_table.txt","r");
 	while(!feof(pFile)) {
 		int aa,instID,val3,val4;
 		fscanf(pFile,"%X %X %X %d",&aa,&instID,&val3,&val4);
@@ -27,7 +27,7 @@ InstrumentMap::InstrumentMap() {
 	}
 	fclose(pFile);
 	// drum_table
-	pFile = fopen("./drum_table.txt","r");
+	pFile = fopen(PKGDIR "/drum_table.txt","r");
 	while(!feof(pFile)) {
 		int aa,inKey,outKey;
 		fscanf(pFile,"%X %X %X",&aa,&inKey,&outKey);

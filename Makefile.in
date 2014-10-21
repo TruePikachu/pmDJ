@@ -35,8 +35,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT)
 noinst_PROGRAMS = checkSmds$(EXEEXT)
-check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT)
-TESTS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT)
+check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
+	test_smdMidi$(EXEEXT)
+TESTS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
+	test_smdMidi$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -52,11 +54,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdRead.$(OBJEXT)
+am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdFile.$(OBJEXT)
 checkSmds_OBJECTS = $(am_checkSmds_OBJECTS)
 checkSmds_LDADD = $(LDADD)
-am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdRead.$(OBJEXT) \
-	midiWrite.$(OBJEXT) instMap.$(OBJEXT)
+am_smd2mid_OBJECTS = smd2mid.$(OBJEXT) smdFile.$(OBJEXT) \
+	midiFile.$(OBJEXT) instMap.$(OBJEXT) smdMidi.$(OBJEXT)
 smd2mid_OBJECTS = $(am_smd2mid_OBJECTS)
 smd2mid_LDADD = $(LDADD)
 am_smdDump_OBJECTS = smdDump.$(OBJEXT) smdFile.$(OBJEXT)
@@ -68,6 +70,10 @@ test_midiFile_DEPENDENCIES =
 am_test_smdFile_OBJECTS = smdFile__test.$(OBJEXT) smdFile.$(OBJEXT)
 test_smdFile_OBJECTS = $(am_test_smdFile_OBJECTS)
 test_smdFile_DEPENDENCIES =
+am_test_smdMidi_OBJECTS = smdMidi__test.$(OBJEXT) smdMidi.$(OBJEXT) \
+	midiFile.$(OBJEXT) smdFile.$(OBJEXT) instMap.$(OBJEXT)
+test_smdMidi_OBJECTS = $(am_test_smdMidi_OBJECTS)
+test_smdMidi_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -78,10 +84,11 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(checkSmds_SOURCES) $(smd2mid_SOURCES) $(smdDump_SOURCES) \
-	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES)
+	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
+	$(test_smdMidi_SOURCES)
 DIST_SOURCES = $(checkSmds_SOURCES) $(smd2mid_SOURCES) \
 	$(smdDump_SOURCES) $(test_midiFile_SOURCES) \
-	$(test_smdFile_SOURCES)
+	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -182,15 +189,17 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
-smd2mid_SOURCES = smd2mid.cpp smdRead.cpp midiWrite.cpp instMap.cpp
-checkSmds_SOURCES = checkSmds.cpp smdRead.cpp
+smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
+checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
 test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
 test_smdFile_LDADD = -ltap++
-noinst_HEADERS = smdRead.hpp midiWrite.hpp instMap.hpp midiFile.hpp smdFile.hpp
+test_smdMidi_SOURCES = smdMidi__test.cpp smdMidi.cpp midiFile.cpp smdFile.cpp instMap.cpp
+test_smdMidi_LDADD = -ltap++
+noinst_HEADERS = instMap.hpp midiFile.hpp smdFile.hpp smdMidi.hpp
 AM_CXXFLAGS = -DPKGDIR=\"$(top_srcdir)\"
-EXTRA_DIST = drum_table.txt prog_table.txt README.md test_data/totaka.mid test_data/bgm0020.smd
+EXTRA_DIST = drum_table.txt prog_table.txt README.md test_data/totaka.mid test_data/bgm0020.smd test_data/bgm0020.mid
 all: all-am
 
 .SUFFIXES:
@@ -287,6 +296,9 @@ test_midiFile$(EXEEXT): $(test_midiFile_OBJECTS) $(test_midiFile_DEPENDENCIES)
 test_smdFile$(EXEEXT): $(test_smdFile_OBJECTS) $(test_smdFile_DEPENDENCIES) 
 	@rm -f test_smdFile$(EXEEXT)
 	$(CXXLINK) $(test_smdFile_OBJECTS) $(test_smdFile_LDADD) $(LIBS)
+test_smdMidi$(EXEEXT): $(test_smdMidi_OBJECTS) $(test_smdMidi_DEPENDENCIES) 
+	@rm -f test_smdMidi$(EXEEXT)
+	$(CXXLINK) $(test_smdMidi_OBJECTS) $(test_smdMidi_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -298,12 +310,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile__test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiWrite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smd2mid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdDump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile__test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdRead.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi__test.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

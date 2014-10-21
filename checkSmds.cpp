@@ -1,5 +1,6 @@
-#include "smdRead.hpp"
+#include "smdFile.hpp"
 #include <errno.h>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -14,11 +15,9 @@ int main(int argc, char *argv[]) {
 	for(int n=1;n<argc;n++) {
 		ifstream smdFile(argv[n]);
 		try {
-			smdSong smdSong(smdFile,true);
-		} catch (int error) {
-			cerr << "Error from " << argv[n] << endl;
-			if(error != EBADRQC)
-				return 1;
+			smdSong smdSong(smdFile);
+		} catch (exception& e) {
+			cerr << "Error from " << argv[n] << ": " << e.what() << endl;
 		}
 	}
 	return 0;

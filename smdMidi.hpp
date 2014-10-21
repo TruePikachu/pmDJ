@@ -5,8 +5,12 @@ class smdMidi;
 #include "smdFile.hpp"
 
 class smdMidi : public MidiFile {
+	private:
+		int	absoluteWriteTime;
 	public:
+				 smdMidi	();
 		smdMidi&	AddToFile	(const smdSong &, int loops=0);
+		// loops=0 means no loop, =1 means one loop (play loop part 2 times)
 };
 
 #endif

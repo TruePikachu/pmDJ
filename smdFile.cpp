@@ -1,4 +1,5 @@
 #include "smdFile.hpp"
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -244,7 +245,11 @@ smdEvent::smdEvent(std::ifstream& file) {
 			case 0xC0:
 				break;
 			default:
-				throw runtime_error("Bad opcode");
+				{
+					char buffer[8];
+					sprintf(buffer,"UNK_%02X",eventCode);
+				throw runtime_error((string)"Bad opcode: "+buffer);
+				}
 		}
 	if((GetType()==WAIT_1BYTE) || (GetType()==WAIT_2BYTE))
 		prevWaitLength = TickLength();

@@ -217,20 +217,38 @@ smdEvent::smdEvent(std::ifstream& file) {
 		}
 	} else if (eventCode > 0x8F)
 		switch(eventCode) {
+			case 0xDC:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case 0xD4:
+			case 0xE2:
+			case 0xEA:
+				file.read(&readByte,1);
+				params.push_back(readByte);
 			case WAIT_2BYTE:
+			case 0xA8:
+			case 0xB4:
 			case 0xD6:
 			case SET_BEND:
 				file.read(&readByte,1);
 				params.push_back(readByte);
 			case WAIT_ADD:
 			case WAIT_1BYTE:
+			case 0x9C:
 			case SET_OCTAVE:
 			case SET_TEMPO:
 			case 0xA9:
 			case 0xAA:
 			case SET_SAMPLE:
+			case 0xB2:
+			case 0xB5:
 			case SET_MODU:
 			case 0xBF:
+			case 0xD0:
+			case 0xD1:
+			case 0xD2:
 			case 0xDB:
 			case SET_VOLUME:
 			case SET_XPRESS:
@@ -242,6 +260,7 @@ smdEvent::smdEvent(std::ifstream& file) {
 			case WAIT_AGAIN:
 			case TRACK_END:
 			case LOOP_POINT:
+			case 0x9D:
 			case 0xC0:
 				break;
 			default:

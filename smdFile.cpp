@@ -284,7 +284,7 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 	char buffer[200];
 	sprintf(buffer,"0x%02X",p.eventCode);
 	os << buffer;
-	for(int i=0;i<3;i++)
+	for(int i=0;i<5;i++)
 		if(i>=p.params.size())
 			os << "     ";
 		else {

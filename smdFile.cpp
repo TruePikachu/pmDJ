@@ -295,10 +295,10 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 			case 0x00:
 				break;
 			case 0x40:
-				os << ", Length=" << (int)p.params[0] << "/192";
+				os << ", Length=" << (int)p.params[1] << "/192";
 				break;
 			case 0x80:
-				os << ", Length=" << (int)(p.params[0]<<8 + p.params[1]) << "/192";
+				os << ", Length=" << (int)((p.params[1]<<8) + p.params[2]) << "/192";
 		}
 	} else
 		switch(p.GetType()) {

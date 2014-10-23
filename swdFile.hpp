@@ -28,12 +28,14 @@ class swdFile {
 class swdFileChunk {
 	protected:
 		char		label[4];
-		size_t		dataSize;
+		off_t		dataOffset;
+		size_t		chunkFileOffset;
 		char*		dataPtr;
 	public:
 					 swdFileChunk	(std::ifstream&);
 					 swdFileChunk	(const swdFileChunk&);
 					~swdFileChunk	();
+		friend std::ostream&	operator<<	(std::ostream&,const swdFileChunk&);
 		swdFileChunk&		operator=	(swdFileChunk);
 
 		std::string		GetLabel	() const;

@@ -34,7 +34,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT) pmDJ$(EXEEXT) \
-	smdInfo$(EXEEXT)
+	smdInfo$(EXEEXT) swdDump$(EXEEXT)
 noinst_PROGRAMS = checkSmds$(EXEEXT)
 check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
 	test_smdMidi$(EXEEXT)
@@ -72,6 +72,9 @@ smdDump_LDADD = $(LDADD)
 am_smdInfo_OBJECTS = smdInfo.$(OBJEXT) smdFile.$(OBJEXT)
 smdInfo_OBJECTS = $(am_smdInfo_OBJECTS)
 smdInfo_LDADD = $(LDADD)
+am_swdDump_OBJECTS = swdDump.$(OBJEXT) swdFile.$(OBJEXT)
+swdDump_OBJECTS = $(am_swdDump_OBJECTS)
+swdDump_LDADD = $(LDADD)
 am_test_midiFile_OBJECTS = midiFile__test.$(OBJEXT) midiFile.$(OBJEXT)
 test_midiFile_OBJECTS = $(am_test_midiFile_OBJECTS)
 test_midiFile_DEPENDENCIES =
@@ -92,11 +95,13 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(test_midiFile_SOURCES) \
-	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
+	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(swdDump_SOURCES) \
+	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
+	$(test_smdMidi_SOURCES)
 DIST_SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(test_midiFile_SOURCES) \
-	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
+	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(swdDump_SOURCES) \
+	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
+	$(test_smdMidi_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -201,6 +206,7 @@ smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 smdInfo_SOURCES = smdInfo.cpp smdFile.cpp
 pmDJ_SOURCES = pmDJ.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
+swdDump_SOURCES = swdDump.cpp swdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
 test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
@@ -306,6 +312,9 @@ smdDump$(EXEEXT): $(smdDump_OBJECTS) $(smdDump_DEPENDENCIES)
 smdInfo$(EXEEXT): $(smdInfo_OBJECTS) $(smdInfo_DEPENDENCIES) 
 	@rm -f smdInfo$(EXEEXT)
 	$(CXXLINK) $(smdInfo_OBJECTS) $(smdInfo_LDADD) $(LIBS)
+swdDump$(EXEEXT): $(swdDump_OBJECTS) $(swdDump_DEPENDENCIES) 
+	@rm -f swdDump$(EXEEXT)
+	$(CXXLINK) $(swdDump_OBJECTS) $(swdDump_LDADD) $(LIBS)
 test_midiFile$(EXEEXT): $(test_midiFile_OBJECTS) $(test_midiFile_DEPENDENCIES) 
 	@rm -f test_midiFile$(EXEEXT)
 	$(CXXLINK) $(test_midiFile_OBJECTS) $(test_midiFile_LDADD) $(LIBS)
@@ -334,6 +343,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdInfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi__test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swdDump.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swdFile.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

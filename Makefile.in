@@ -33,7 +33,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT) pmDJ$(EXEEXT)
+bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT) pmDJ$(EXEEXT) \
+	smdInfo$(EXEEXT)
 noinst_PROGRAMS = checkSmds$(EXEEXT)
 check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
 	test_smdMidi$(EXEEXT)
@@ -68,6 +69,9 @@ smd2mid_LDADD = $(LDADD)
 am_smdDump_OBJECTS = smdDump.$(OBJEXT) smdFile.$(OBJEXT)
 smdDump_OBJECTS = $(am_smdDump_OBJECTS)
 smdDump_LDADD = $(LDADD)
+am_smdInfo_OBJECTS = smdInfo.$(OBJEXT) smdFile.$(OBJEXT)
+smdInfo_OBJECTS = $(am_smdInfo_OBJECTS)
+smdInfo_LDADD = $(LDADD)
 am_test_midiFile_OBJECTS = midiFile__test.$(OBJEXT) midiFile.$(OBJEXT)
 test_midiFile_OBJECTS = $(am_test_midiFile_OBJECTS)
 test_midiFile_DEPENDENCIES =
@@ -88,10 +92,10 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(test_midiFile_SOURCES) \
+	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(test_midiFile_SOURCES) \
 	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
 DIST_SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(test_midiFile_SOURCES) \
+	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(test_midiFile_SOURCES) \
 	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
@@ -194,6 +198,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 smdDump_SOURCES = smdDump.cpp smdFile.cpp
 smd2mid_SOURCES = smd2mid.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
+smdInfo_SOURCES = smdInfo.cpp smdFile.cpp
 pmDJ_SOURCES = pmDJ.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
@@ -298,6 +303,9 @@ smd2mid$(EXEEXT): $(smd2mid_OBJECTS) $(smd2mid_DEPENDENCIES)
 smdDump$(EXEEXT): $(smdDump_OBJECTS) $(smdDump_DEPENDENCIES) 
 	@rm -f smdDump$(EXEEXT)
 	$(CXXLINK) $(smdDump_OBJECTS) $(smdDump_LDADD) $(LIBS)
+smdInfo$(EXEEXT): $(smdInfo_OBJECTS) $(smdInfo_DEPENDENCIES) 
+	@rm -f smdInfo$(EXEEXT)
+	$(CXXLINK) $(smdInfo_OBJECTS) $(smdInfo_LDADD) $(LIBS)
 test_midiFile$(EXEEXT): $(test_midiFile_OBJECTS) $(test_midiFile_DEPENDENCIES) 
 	@rm -f test_midiFile$(EXEEXT)
 	$(CXXLINK) $(test_midiFile_OBJECTS) $(test_midiFile_LDADD) $(LIBS)
@@ -323,6 +331,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdDump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdFile__test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdInfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smdMidi__test.Po@am__quote@
 

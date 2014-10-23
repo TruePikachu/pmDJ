@@ -30,13 +30,13 @@ int main(int argc, char *argv[]) {
 					default:
 						readPos+=evt->TickLength();
 				}
-			cout << "t" << trk->GetTrackID() << " o" << trk->GetOutputID() << " " << (trk->IsDrum()?'d':' ') << "  Length:";
-			sprintf(buffer,"%6u:%1u.%02u %-12u",readPos/192,(readPos%192)/48,readPos%48,readPos);
+			cout << ((trk->GetTrackID()<10)?"t ":"t") << trk->GetTrackID() << ((trk->GetOutputID()<10)?" o ":" o") << trk->GetOutputID() << " " << (trk->IsDrum()?'d':' ') << "  Length:";
+			sprintf(buffer,"%6u:%1u.%02u=%-12u",readPos/192,(readPos%192)/48,readPos%48,readPos);
 			cout << buffer;
 			if(loopPos!=-1) {
-				sprintf(buffer,"%6u:%1u.%02u %-12u",loopPos/192 +1,(loopPos%192)/48 +1, loopPos%48,loopPos);
+				sprintf(buffer,"%6u:%1u.%02u=%-12u",loopPos/192 +1,(loopPos%192)/48 +1, loopPos%48,loopPos);
 				cout << "  Loop@" << buffer;
-				sprintf(buffer,"%6u:%1u.%02u %-12u",(readPos-loopPos)/192,((readPos-loopPos)%192)/48,(readPos-loopPos)%48,readPos-loopPos);
+				sprintf(buffer,"%6u:%1u.%02u=%-12u",(readPos-loopPos)/192,((readPos-loopPos)%192)/48,(readPos-loopPos)%48,readPos-loopPos);
 				cout << " (length:" << buffer << ")";
 			}
 			cout << endl;

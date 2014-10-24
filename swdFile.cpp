@@ -83,4 +83,60 @@ const std::vector< swdFileChunk >& swdFile::Chunks() const {
 
 //////////
 
+swdFileChunk::swdFileChunk(std::ifstream&file) {
+	chunkOffset=file.tellg();
+	file.read(label,4);
+	label[4]='\0';
+	file.seekg(chunkOffset+0xC);
+	uint32_t buf;
+	file.read((char*)&buf,4);
+	dataSize=buf;
+	dataPtr = new char[buf];
+	file.read(dataPtr,buf);
+}
+
+swdFileChunk::swdFileChunk(const swdFileChunk&other) {
+	for(int i=0;i<4;i++)
+		label[i]=other.label[i];
+	label[4]='\0';
+	chunkOffset=other.chunkOffset;
+	dataSize=other.dataSize;
+	dataPtr = new char[dataSize];
+	memmove(dataPtr,other.dataPtr,dataSize);
+}
+
+swdFileChunk::~swdFileChunk() {
+	delete dataPtr;
+}
+
+std::ostream& operator<<(std::ostream&os,const swdFileChunk&p) {
+	os << p.label << ": ";
+	char buf[64];
+	sprintf(buf,"@0x%08X size 0x%08X",p.chunkOffset,p.dataSize);
+	os << buf << endl;
+	return os;
+}
+
+swdFileChunk& swdFileChunk::operator=(swdFileChunk other) {
+	for(int i=0;i<4;i++)
+		label[i]=other.label[i];
+	label[4]='\0';
+	chunkOffset=other.chunkOffset;
+	dataSize=other.dataSize;
+	dataPtr = new char[dataSize];
+	memmove(dataPtr,other.dataPtr,dataSize);
+	return *this;
+}
+
+std::string swdFileChunk::GetLabel() const {
+	return label;
+}
+
+size_t swdFileChunk::GetSize() const {
+	return dataSize;
+}
+
+const char* swdFileChunk::GetDataPtr() const {
+	return dataPtr;
+}
 

@@ -27,9 +27,9 @@ class swdFile {
 
 class swdFileChunk {
 	protected:
-		char		label[4];
-		off_t		dataOffset;
-		size_t		chunkFileOffset;
+		char		label[5];
+		off_t		chunkOffset;
+		size_t		dataSize;
 		char*		dataPtr;
 	public:
 					 swdFileChunk	(std::ifstream&);

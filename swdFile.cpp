@@ -116,7 +116,7 @@ swdFileChunk::~swdFileChunk() {
 std::ostream& operator<<(std::ostream&os,const swdFileChunk&p) {
 	os << p.label << ": ";
 	char buf[64];
-	sprintf(buf,"@0x%08X size 0x%08X",p.chunkOffset,p.dataSize);
+	sprintf(buf,"@ 0x%08X size 0x%08X",p.chunkOffset,p.dataSize);
 	os << buf << endl;
 	return os;
 }

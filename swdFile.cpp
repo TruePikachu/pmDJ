@@ -44,6 +44,10 @@ swdFile::swdFile(std::ifstream& file) {
 	while(file.tellg()<(myStart+fileLength)) {
 		swdFileChunk newChunk(file);
 		chunks.push_back(newChunk);
+		// Align
+		off_t sizePadding = (0x10-(file.tellg()%0x10))%0x10;
+		char buf[32];
+		file.read(buf,sizePadding);
 	}
 	if(file.tellg()!=(myStart+fileLength))
 		throw logic_error("Extra bytes???");

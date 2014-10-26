@@ -18,9 +18,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 		int lC = loops+1;
 		// Figure out what MIDI channel to use
 		int midiChannel = track->GetOutputID();
-		if(midiChannel>=9)
-			midiChannel++;
-		if(midiChannel==16)
+		if(midiChannel==9)
 			for(midiChannel=0;midiChannel<16;midiChannel++)
 				if((midiChannel!=9) && !song.OutputInUse(midiChannel))
 					break;

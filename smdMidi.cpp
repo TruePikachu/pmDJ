@@ -20,7 +20,7 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 		int midiChannel = track->GetOutputID();
 		if(midiChannel==9)
 			for(midiChannel=0;midiChannel<16;midiChannel++)
-				if((midiChannel!=9) && !song.OutputInUse(midiChannel))
+				if((midiChannel!=9) && !song.OutputInUseNotDrum(midiChannel))
 					break;
 		if(track->IsDrum())
 			midiChannel=9;

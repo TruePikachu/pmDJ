@@ -35,7 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = smdDump$(EXEEXT) smd2mid$(EXEEXT) pmDJ$(EXEEXT) \
 	smdInfo$(EXEEXT) swdDump$(EXEEXT)
-noinst_PROGRAMS = checkSmds$(EXEEXT)
+noinst_PROGRAMS = checkSmds$(EXEEXT) easyName$(EXEEXT)
 check_PROGRAMS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
 	test_smdMidi$(EXEEXT)
 TESTS = test_midiFile$(EXEEXT) test_smdFile$(EXEEXT) \
@@ -58,6 +58,9 @@ PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_checkSmds_OBJECTS = checkSmds.$(OBJEXT) smdFile.$(OBJEXT)
 checkSmds_OBJECTS = $(am_checkSmds_OBJECTS)
 checkSmds_LDADD = $(LDADD)
+am_easyName_OBJECTS = easyName.$(OBJEXT)
+easyName_OBJECTS = $(am_easyName_OBJECTS)
+easyName_LDADD = $(LDADD)
 am_pmDJ_OBJECTS = pmDJ.$(OBJEXT) smdFile.$(OBJEXT) midiFile.$(OBJEXT) \
 	instMap.$(OBJEXT) smdMidi.$(OBJEXT)
 pmDJ_OBJECTS = $(am_pmDJ_OBJECTS)
@@ -94,14 +97,14 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(swdDump_SOURCES) \
-	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
-	$(test_smdMidi_SOURCES)
-DIST_SOURCES = $(checkSmds_SOURCES) $(pmDJ_SOURCES) $(smd2mid_SOURCES) \
-	$(smdDump_SOURCES) $(smdInfo_SOURCES) $(swdDump_SOURCES) \
-	$(test_midiFile_SOURCES) $(test_smdFile_SOURCES) \
-	$(test_smdMidi_SOURCES)
+SOURCES = $(checkSmds_SOURCES) $(easyName_SOURCES) $(pmDJ_SOURCES) \
+	$(smd2mid_SOURCES) $(smdDump_SOURCES) $(smdInfo_SOURCES) \
+	$(swdDump_SOURCES) $(test_midiFile_SOURCES) \
+	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
+DIST_SOURCES = $(checkSmds_SOURCES) $(easyName_SOURCES) \
+	$(pmDJ_SOURCES) $(smd2mid_SOURCES) $(smdDump_SOURCES) \
+	$(smdInfo_SOURCES) $(swdDump_SOURCES) $(test_midiFile_SOURCES) \
+	$(test_smdFile_SOURCES) $(test_smdMidi_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -207,6 +210,7 @@ smdInfo_SOURCES = smdInfo.cpp smdFile.cpp
 pmDJ_SOURCES = pmDJ.cpp smdFile.cpp midiFile.cpp instMap.cpp smdMidi.cpp
 checkSmds_SOURCES = checkSmds.cpp smdFile.cpp
 swdDump_SOURCES = swdDump.cpp swdFile.cpp
+easyName_SOURCES = easyName.cpp
 test_midiFile_SOURCES = midiFile__test.cpp midiFile.cpp
 test_midiFile_LDADD = -ltap++
 test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
@@ -300,6 +304,9 @@ clean-noinstPROGRAMS:
 checkSmds$(EXEEXT): $(checkSmds_OBJECTS) $(checkSmds_DEPENDENCIES) 
 	@rm -f checkSmds$(EXEEXT)
 	$(CXXLINK) $(checkSmds_OBJECTS) $(checkSmds_LDADD) $(LIBS)
+easyName$(EXEEXT): $(easyName_OBJECTS) $(easyName_DEPENDENCIES) 
+	@rm -f easyName$(EXEEXT)
+	$(CXXLINK) $(easyName_OBJECTS) $(easyName_LDADD) $(LIBS)
 pmDJ$(EXEEXT): $(pmDJ_OBJECTS) $(pmDJ_DEPENDENCIES) 
 	@rm -f pmDJ$(EXEEXT)
 	$(CXXLINK) $(pmDJ_OBJECTS) $(pmDJ_LDADD) $(LIBS)
@@ -332,6 +339,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/checkSmds.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/easyName.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midiFile__test.Po@am__quote@
@@ -596,7 +604,7 @@ distcheck: dist
 	*.zip*) \
 	  unzip $(distdir).zip ;;\
 	esac
-	chmod -R a-w $(distdir); chmod u+w $(distdir)
+	chmod -R a-w $(distdir); chmod a+w $(distdir)
 	mkdir $(distdir)/_build
 	mkdir $(distdir)/_inst
 	chmod a-w $(distdir)

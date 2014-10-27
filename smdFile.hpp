@@ -26,6 +26,7 @@ class smdSong {
 		const std::vector< smdTrack >&	Tracks		() const;
 		const smdTrack&			operator[]	(int) const;
 		bool				OutputInUse	(int) const;
+		bool			OutputInUseNotDrum	(int) const;
 };
 
 class smdTrack {
@@ -46,6 +47,7 @@ class smdTrack {
 		int				GetEventCount	() const;
 		const std::vector< smdEvent >&	Events		() const;
 		const smdEvent&			operator[]	(int) const;
+		size_t				LongestCmdSize	() const;
 };
 
 class smdEvent {
@@ -78,11 +80,13 @@ class smdEvent {
 				 smdEvent	(std::ifstream&);
 		friend std::ostream& operator<<(std::ostream&, const smdEvent&);
 	public:
+		static size_t	DisplayBytes;
 		EventType	GetType		() const;
 		uint8_t		GetEventCode	() const;
 		int		GetParamCount	() const;
 		uint8_t		Param		(int) const;
 		int		TickLength	() const;
+		size_t		CmdSize		() const;
 };
 
 #endif

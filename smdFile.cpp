@@ -78,10 +78,19 @@ const std::vector< smdTrack >& smdSong::Tracks() const {
 const smdTrack& smdSong::operator[](int i) const {
 	return tracks[i];
 }
+
 bool smdSong::OutputInUse(int n) const {
 	for(vector< smdTrack >::const_iterator it=tracks.begin();it!=tracks.end();++it)
 		if(n==it->GetOutputID())
 			return true;
+	return false;
+}
+
+bool smdSong::OutputInUseNotDrum(int n) const {
+	for(vector< smdTrack >::const_iterator it=tracks.begin();it!=tracks.end();++it)
+		if(n==it->GetOutputID())
+			if(!it->IsDrum())
+				return true;
 	return false;
 }
 
@@ -135,6 +144,7 @@ smdTrack::smdTrack(std::ifstream& file, int instrumentGroup) : instrumentGroup(i
 std::ostream& operator<<(std::ostream& os, const smdTrack& p) {
 	os << "tID=" << p.trackID << ", oID=" << p.outputID << endl;
 	os << "Events: (" << p.events.size() << " count)\n";
+	smdEvent::DisplayBytes = p.LongestCmdSize();
 	int when = 0;
 	char whenBuffer[64];
 	int loopPos = -1;
@@ -192,8 +202,17 @@ const smdEvent& smdTrack::operator[](int i) const {
 	return events[i];
 }
 
+size_t smdTrack::LongestCmdSize() const {
+	size_t result = 0;
+	for(vector< smdEvent >::const_iterator it=events.begin();it!=events.end();++it)
+		if(it->CmdSize()>result)
+			result=it->CmdSize();
+	return result;
+}
+
 //////////
 int smdEvent::prevWaitLength;
+size_t smdEvent::DisplayBytes;
 
 smdEvent::smdEvent(std::ifstream& file) {
 	char readByte;
@@ -284,7 +303,10 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 	char buffer[200];
 	sprintf(buffer,"0x%02X",p.eventCode);
 	os << buffer;
-	for(int i=0;i<5;i++)
+	int howMany=smdEvent::DisplayBytes-1;
+	if(howMany<=0)
+		howMany=p.params.size();
+	for(int i=0;i<howMany;i++)
 		if(i>=p.params.size())
 			os << "     ";
 		else {
@@ -445,4 +467,8 @@ int smdEvent::TickLength() const {
 		default:
 			return 0;
 	}
+}
+
+size_t smdEvent::CmdSize() const {
+	return 1+params.size();
 }

@@ -42,8 +42,13 @@ swdFile::swdFile(std::ifstream& file) {
 	}
 	file.seekg(myStart+0x50);
 	while(file.tellg()<(myStart+fileLength)) {
-		swdFileChunk newChunk(file);
-		chunks.push_back(newChunk);
+		swdFileChunk::ChunkType type = swdFileChunk::GetType(file);
+		switch(type) {
+			default:
+				swdFileChunk newChunk(file);
+				chunks.push_back(newChunk);
+				break;
+		}
 		// Align
 		off_t sizePadding = (0x10-(file.tellg()%0x10))%0x10;
 		char buf[32];
@@ -144,3 +149,23 @@ const char* swdFileChunk::GetDataPtr() const {
 	return dataPtr;
 }
 
+swdFileChunk::ChunkType swdFileChunk::GetType(std::ifstream& file) {
+	char buf[4];
+	file.read(buf,4);
+	file.seekg(-4,file.cur);
+	if(!strncmp(buf,"eod ",4))
+		return CHUNK_EOD;
+	if(!strncmp(buf,"kgrp",4))
+		return CHUNK_KGRP;
+	if(!strncmp(buf,"pcmd",4))
+		return CHUNK_PCMD;
+	if(!strncmp(buf,"prgi",4))
+		return CHUNK_PRGI;
+	if(!strncmp(buf,"wavi",4))
+		return CHUNK_WAVI;
+	return UNKNOWN_CHUNK;
+}
+
+swdFileChunk::ChunkType swdFileChunk::GetType() const {
+	return UNKNOWN_CHUNK;
+}

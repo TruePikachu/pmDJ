@@ -2,6 +2,11 @@
 #define __SWDFILE_HPP
 class swdFile;
 class swdFileChunk;
+class swdChunkEOD;
+class swdChunkKGRP;
+class swdChunkPCMD;
+class swdChunkPRGI;
+class swdChunkWAVI;
 #include <fstream>
 #include <ostream>
 #include <stdint.h>
@@ -26,6 +31,14 @@ class swdFile {
 };
 
 class swdFileChunk {
+	public:
+		typedef enum {	UNKNOWN_CHUNK,
+				CHUNK_EOD,
+				CHUNK_KGRP,
+				CHUNK_PCMD,
+				CHUNK_PRGI,
+				CHUNK_WAVI
+		} ChunkType;
 	protected:
 		char		label[5];
 		off_t		chunkOffset;
@@ -41,6 +54,13 @@ class swdFileChunk {
 		std::string		GetLabel	() const;
 		size_t			GetSize		() const;
 		const char*		GetDataPtr	() const;
+		virtual ChunkType	GetType		() const;
+		static ChunkType	GetType		(std::ifstream&);
+		const swdChunkEOD&	AsEOD		() const;
+		const swdChunkKGRP&	AsKGRP		() const;
+		const swdChunkPCMD&	AsPCMD		() const;
+		const swdChunkPRGI&	AsPRGI		() const;
+		const swdChunkWAVI&	AsWAVI		() const;
 };
 
 #endif

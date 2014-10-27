@@ -207,7 +207,7 @@ test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
 test_smdFile_LDADD = -ltap++
 test_smdMidi_SOURCES = smdMidi__test.cpp smdMidi.cpp midiFile.cpp smdFile.cpp instMap.cpp
 test_smdMidi_LDADD = -ltap++
-noinst_HEADERS = instMap.hpp midiFile.hpp smdFile.hpp smdMidi.hpp
+noinst_HEADERS = instMap.hpp midiFile.hpp smdFile.hpp smdMidi.hpp swdFile.hpp
 AM_CXXFLAGS = -DPKGDIR=\"$(top_srcdir)\"
 EXTRA_DIST = drum_table.txt prog_table.txt README.md test_data/totaka.mid test_data/bgm0020.smd test_data/bgm0020.mid
 all: all-am

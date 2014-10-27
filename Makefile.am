@@ -12,7 +12,7 @@ test_smdFile_SOURCES = smdFile__test.cpp smdFile.cpp
 test_smdFile_LDADD = -ltap++
 test_smdMidi_SOURCES = smdMidi__test.cpp smdMidi.cpp midiFile.cpp smdFile.cpp instMap.cpp
 test_smdMidi_LDADD = -ltap++
-noinst_HEADERS = instMap.hpp midiFile.hpp smdFile.hpp smdMidi.hpp
+noinst_HEADERS = instMap.hpp midiFile.hpp smdFile.hpp smdMidi.hpp swdFile.hpp
 
 AM_CXXFLAGS=-DPKGDIR=\"$(top_srcdir)\"
 TESTS = test_midiFile test_smdFile test_smdMidi

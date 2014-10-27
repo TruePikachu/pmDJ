@@ -135,6 +135,7 @@ smdTrack::smdTrack(std::ifstream& file, int instrumentGroup) : instrumentGroup(i
 std::ostream& operator<<(std::ostream& os, const smdTrack& p) {
 	os << "tID=" << p.trackID << ", oID=" << p.outputID << endl;
 	os << "Events: (" << p.events.size() << " count)\n";
+	smdEvent::DisplayBytes = p.LongestCmdSize();
 	int when = 0;
 	char whenBuffer[64];
 	int loopPos = -1;
@@ -192,8 +193,17 @@ const smdEvent& smdTrack::operator[](int i) const {
 	return events[i];
 }
 
+size_t smdTrack::LongestCmdSize() const {
+	size_t result = 0;
+	for(vector< smdEvent >::const_iterator it=events.begin();it!=events.end();++it)
+		if(it->CmdSize()>result)
+			result=it->CmdSize();
+	return result;
+}
+
 //////////
 int smdEvent::prevWaitLength;
+size_t smdEvent::DisplayBytes;
 
 smdEvent::smdEvent(std::ifstream& file) {
 	char readByte;
@@ -217,20 +227,38 @@ smdEvent::smdEvent(std::ifstream& file) {
 		}
 	} else if (eventCode > 0x8F)
 		switch(eventCode) {
+			case 0xDC:
+				file.read(&readByte,1);
+				params.push_back(readByte);
+				file.read(&readByte,1);
+				params.push_back(readByte);
+			case 0xD4:
+			case 0xE2:
+			case 0xEA:
+				file.read(&readByte,1);
+				params.push_back(readByte);
 			case WAIT_2BYTE:
+			case 0xA8:
+			case 0xB4:
 			case 0xD6:
 			case SET_BEND:
 				file.read(&readByte,1);
 				params.push_back(readByte);
 			case WAIT_ADD:
 			case WAIT_1BYTE:
+			case 0x9C:
 			case SET_OCTAVE:
 			case SET_TEMPO:
 			case 0xA9:
 			case 0xAA:
 			case SET_SAMPLE:
+			case 0xB2:
+			case 0xB5:
 			case SET_MODU:
 			case 0xBF:
+			case 0xD0:
+			case 0xD1:
+			case 0xD2:
 			case 0xDB:
 			case SET_VOLUME:
 			case SET_XPRESS:
@@ -242,6 +270,7 @@ smdEvent::smdEvent(std::ifstream& file) {
 			case WAIT_AGAIN:
 			case TRACK_END:
 			case LOOP_POINT:
+			case 0x9D:
 			case 0xC0:
 				break;
 			default:
@@ -265,7 +294,10 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 	char buffer[200];
 	sprintf(buffer,"0x%02X",p.eventCode);
 	os << buffer;
-	for(int i=0;i<3;i++)
+	int howMany=smdEvent::DisplayBytes-1;
+	if(howMany<=0)
+		howMany=p.params.size();
+	for(int i=0;i<howMany;i++)
 		if(i>=p.params.size())
 			os << "     ";
 		else {
@@ -426,4 +458,8 @@ int smdEvent::TickLength() const {
 		default:
 			return 0;
 	}
+}
+
+size_t smdEvent::CmdSize() const {
+	return 1+params.size();
 }

@@ -60,16 +60,35 @@ class swdFileChunk {
 		const char*		GetDataPtr	() const;
 		virtual ChunkType	GetType		() const;
 		static ChunkType	GetType		(std::ifstream&);
-		const swdChunkEOD&	AsEOD		() const;
-		const swdChunkKGRP&	AsKGRP		() const;
-		const swdChunkPCMD&	AsPCMD		() const;
-		const swdChunkPRGI&	AsPRGI		() const;
-		const swdChunkWAVI&	AsWAVI		() const;
 };
 
 class swdChunkEOD : public swdFileChunk {
 	public:
 					 swdChunkEOD	(std::ifstream&);
+		swdFileChunk::ChunkType	GetType		() const;
+};
+
+class swdChunkKGRP : public swdFileChunk {
+	public:
+					 swdChunkKGRP	(std::ifstream&);
+		swdFileChunk::ChunkType	GetType		() const;
+};
+
+class swdChunkPCMD : public swdFileChunk {
+	public:
+					 swdChunkPCMD	(std::ifstream&);
+		swdFileChunk::ChunkType	GetType		() const;
+};
+
+class swdChunkPRGI : public swdFileChunk {
+	public:
+					 swdChunkPRGI	(std::ifstream&);
+		swdFileChunk::ChunkType	GetType		() const;
+};
+
+class swdChunkWAVI : public swdFileChunk {
+	public:
+					 swdChunkWAVI	(std::ifstream&);
 		swdFileChunk::ChunkType	GetType		() const;
 };
 #endif

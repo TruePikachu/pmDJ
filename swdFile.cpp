@@ -48,6 +48,18 @@ swdFile::swdFile(std::ifstream& file) {
 			case swdFileChunk::CHUNK_EOD:
 				newChunk = new swdChunkEOD(file);
 				break;
+			case swdFileChunk::CHUNK_KGRP:
+				newChunk = new swdChunkKGRP(file);
+				break;
+			case swdFileChunk::CHUNK_PCMD:
+				newChunk = new swdChunkPCMD(file);
+				break;
+			case swdFileChunk::CHUNK_PRGI:
+				newChunk = new swdChunkPRGI(file);
+				break;
+			case swdFileChunk::CHUNK_WAVI:
+				newChunk = new swdChunkWAVI(file);
+				break;
 			default:
 				newChunk = new swdFileChunk(file);
 		}
@@ -77,7 +89,19 @@ swdFile& swdFile::operator=(swdFile other) {
 	for(vector< swdFileChunk* >::const_iterator it=other.chunks.begin();it!=other.chunks.end();++it)
 		switch((*it)->GetType()) {
 			case swdFileChunk::CHUNK_EOD:
-				chunks.push_back(new swdChunkEOD((*it)->AsEOD()));
+				chunks.push_back(new swdChunkEOD(*(swdChunkEOD*)*it));
+				break;
+			case swdFileChunk::CHUNK_KGRP:
+				chunks.push_back(new swdChunkKGRP(*(swdChunkKGRP*)*it));
+				break;
+			case swdFileChunk::CHUNK_PCMD:
+				chunks.push_back(new swdChunkPCMD(*(swdChunkPCMD*)*it));
+				break;
+			case swdFileChunk::CHUNK_PRGI:
+				chunks.push_back(new swdChunkPRGI(*(swdChunkPRGI*)*it));
+				break;
+			case swdFileChunk::CHUNK_WAVI:
+				chunks.push_back(new swdChunkWAVI(*(swdChunkWAVI*)*it));
 				break;
 			default:
 				chunks.push_back(new swdFileChunk(**it));
@@ -120,7 +144,20 @@ const std::vector< swdFileChunk* >& swdFile::Chunks() const {
 //////////
 
 std::ostream& swdFileChunk::AdvancedInfo(std::ostream& os) const {
-	return os;
+	char b[16];
+	for(off_t i=0;i<dataSize;i++) {
+		if((i%16)==0) {
+			if(i)
+				os << endl;
+			sprintf(b,"  0x%08X",i);
+			os << b;
+		}
+		if((i%8)==0)
+			os << ' ';
+		sprintf(b," %02X",(uint8_t)dataPtr[i]);
+		os << b;
+	}
+	return os << endl;
 }
 
 swdFileChunk::swdFileChunk(std::ifstream&file) {
@@ -201,10 +238,6 @@ swdFileChunk::ChunkType swdFileChunk::GetType() const {
 	return UNKNOWN_CHUNK;
 }
 
-const swdChunkEOD& swdFileChunk::AsEOD() const {
-	return *(swdChunkEOD*)this;
-}
-
 //////////
 
 swdChunkEOD::swdChunkEOD(std::ifstream& file) : swdFileChunk(file) {
@@ -212,4 +245,40 @@ swdChunkEOD::swdChunkEOD(std::ifstream& file) : swdFileChunk(file) {
 
 swdFileChunk::ChunkType swdChunkEOD::GetType() const {
 	return swdFileChunk::CHUNK_EOD;
+}
+
+//////////
+
+swdChunkKGRP::swdChunkKGRP(std::ifstream& file) : swdFileChunk(file) {
+}
+
+swdFileChunk::ChunkType swdChunkKGRP::GetType() const {
+	return swdFileChunk::CHUNK_KGRP;
+}
+
+//////////
+
+swdChunkPCMD::swdChunkPCMD(std::ifstream& file) : swdFileChunk(file) {
+}
+
+swdFileChunk::ChunkType swdChunkPCMD::GetType() const {
+	return swdFileChunk::CHUNK_PCMD;
+}
+
+//////////
+
+swdChunkPRGI::swdChunkPRGI(std::ifstream& file) : swdFileChunk(file) {
+}
+
+swdFileChunk::ChunkType swdChunkPRGI::GetType() const {
+	return swdFileChunk::CHUNK_PRGI;
+}
+
+//////////
+
+swdChunkWAVI::swdChunkWAVI(std::ifstream& file) : swdFileChunk(file) {
+}
+
+swdFileChunk::ChunkType swdChunkWAVI::GetType() const {
+	return swdFileChunk::CHUNK_WAVI;
 }

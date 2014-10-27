@@ -46,6 +46,7 @@ class smdTrack {
 		int				GetEventCount	() const;
 		const std::vector< smdEvent >&	Events		() const;
 		const smdEvent&			operator[]	(int) const;
+		size_t				LongestCmdSize	() const;
 };
 
 class smdEvent {
@@ -83,6 +84,7 @@ class smdEvent {
 		int		GetParamCount	() const;
 		uint8_t		Param		(int) const;
 		int		TickLength	() const;
+		size_t		CmdSize		() const;
 };
 
 #endif

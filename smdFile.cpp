@@ -192,6 +192,14 @@ const smdEvent& smdTrack::operator[](int i) const {
 	return events[i];
 }
 
+size_t smdTrack::LongestCmdSize() const {
+	size_t result = 0;
+	for(vector< smdEvent >::const_iterator it=events.begin();it!=events.end();++it)
+		if(it->CmdSize()>result)
+			result=it->CmdSize();
+	return result;
+}
+
 //////////
 int smdEvent::prevWaitLength;
 
@@ -445,4 +453,8 @@ int smdEvent::TickLength() const {
 		default:
 			return 0;
 	}
+}
+
+size_t smdEvent::CmdSize() const {
+	return 1+params.size();
 }

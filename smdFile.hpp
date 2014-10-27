@@ -26,6 +26,7 @@ class smdSong {
 		const std::vector< smdTrack >&	Tracks		() const;
 		const smdTrack&			operator[]	(int) const;
 		bool				OutputInUse	(int) const;
+		bool			OutputInUseNotDrum	(int) const;
 };
 
 class smdTrack {

@@ -78,10 +78,19 @@ const std::vector< smdTrack >& smdSong::Tracks() const {
 const smdTrack& smdSong::operator[](int i) const {
 	return tracks[i];
 }
+
 bool smdSong::OutputInUse(int n) const {
 	for(vector< smdTrack >::const_iterator it=tracks.begin();it!=tracks.end();++it)
 		if(n==it->GetOutputID())
 			return true;
+	return false;
+}
+
+bool smdSong::OutputInUseNotDrum(int n) const {
+	for(vector< smdTrack >::const_iterator it=tracks.begin();it!=tracks.end();++it)
+		if(n==it->GetOutputID())
+			if(!it->IsDrum())
+				return true;
 	return false;
 }
 

@@ -9,6 +9,18 @@
 #include <vector>
 using namespace std;
 
+unsigned readByte(const char* where) {
+	return (uint8_t)*where;
+}
+
+unsigned readWord(const char* where) {
+	return readByte(where) + (readByte(where+1)<<8);
+}
+
+unsigned readDWord(const char* where) {
+	return readWord(where) + (readWord(where+2)<<16);
+}
+
 swdFile::swdFile(std::ifstream& file) {
 	off_t myStart = file.tellg();
 	{ // Check magic number
@@ -276,7 +288,46 @@ swdFileChunk::ChunkType swdChunkPRGI::GetType() const {
 
 //////////
 
+void swdChunkWAVI::AddEntry(off_t where) {
+	Entry newEntry;
+	newEntry.indexNumber=readWord(dataPtr+where+0x02);
+	newEntry.unk_04=readWord(dataPtr+where+0x04);
+	memmove(newEntry.unk_12,dataPtr+where+0x12,sizeof(newEntry.unk_12));
+	newEntry.sampleRate=readWord(dataPtr+where+0x20);
+	memmove(newEntry.unk_22,dataPtr+where+0x22,sizeof(newEntry.unk_22));
+	dataEntry.push_back(newEntry);
+}
+
+std::ostream& swdChunkWAVI::AdvancedInfo(std::ostream&os) const {
+	char buf[128];
+	for(vector< Entry >::const_iterator it=dataEntry.begin();it!=dataEntry.end();++it) {
+		sprintf(buf,"  id=%5i,unk_04=0x%04X,unk_12=%02X",it->indexNumber,it->unk_04,(uint8_t)it->unk_12[0]);
+		os << buf;
+		for(off_t i=1;i<sizeof(it->unk_12);i++) {
+			sprintf(buf,"/%02X",(uint8_t)it->unk_12[i]);
+			os << buf;
+		}
+		sprintf(buf,",sampleRate=%5i,unk_22=%02X",it->sampleRate,(uint8_t)it->unk_22[0]);
+		os << buf;
+		for(off_t i=1;i<sizeof(it->unk_22);i++) {
+			sprintf(buf,"/%02X",(uint8_t)it->unk_22[i]);
+			os << buf;
+		}
+		os << endl;
+	}
+	return os;
+}
+
 swdChunkWAVI::swdChunkWAVI(std::ifstream& file) : swdFileChunk(file) {
+	off_t dataStartPos=-1;
+	for(off_t readPos=0;(readPos<dataStartPos)||(dataStartPos==-1);readPos+=2) {
+		off_t dataPos = readWord(dataPtr+readPos);
+		if(dataPos && (dataPos!=0xAAAA)) {
+			if((dataStartPos==-1)||(dataPos<dataStartPos))
+				dataStartPos=dataPos;
+			AddEntry(dataPos);
+		}
+	}
 }
 
 swdFileChunk::ChunkType swdChunkWAVI::GetType() const {

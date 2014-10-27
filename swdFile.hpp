@@ -13,6 +13,10 @@ class swdChunkWAVI;
 #include <string>
 #include <vector>
 
+unsigned readByte(const char*);
+unsigned readWord(const char*);
+unsigned readDWord(const char*);
+
 class swdFile {
 	private:
 		std::string	intFilename;
@@ -87,6 +91,18 @@ class swdChunkPRGI : public swdFileChunk {
 };
 
 class swdChunkWAVI : public swdFileChunk {
+	public:
+		typedef struct {
+			int		indexNumber;
+			uint16_t	unk_04;
+			char		unk_12[0x20-0x12];
+			uint16_t	sampleRate;
+			char		unk_22[0x40-0x22];
+		} Entry;
+	private:
+		std::vector< Entry > dataEntry;
+		void	AddEntry(off_t);
+		std::ostream& AdvancedInfo(std::ostream&) const;
 	public:
 					 swdChunkWAVI	(std::ifstream&);
 		swdFileChunk::ChunkType	GetType		() const;

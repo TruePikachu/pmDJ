@@ -119,6 +119,10 @@ const std::vector< swdFileChunk* >& swdFile::Chunks() const {
 
 //////////
 
+std::ostream& swdFileChunk::AdvancedInfo(std::ostream& os) const {
+	return os;
+}
+
 swdFileChunk::swdFileChunk(std::ifstream&file) {
 	chunkOffset=file.tellg();
 	file.read(label,4);
@@ -157,7 +161,7 @@ std::ostream& operator<<(std::ostream&os,const swdFileChunk&p) {
 		default:
 			os << endl;
 	}
-	return os;
+	return p.AdvancedInfo(os);
 }
 
 swdFileChunk& swdFileChunk::operator=(swdFileChunk other) {

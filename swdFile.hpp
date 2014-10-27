@@ -47,6 +47,7 @@ class swdFileChunk {
 		off_t		chunkOffset;
 		size_t		dataSize;
 		char*		dataPtr;
+		virtual std::ostream&	AdvancedInfo(std::ostream&) const;
 	public:
 					 swdFileChunk	(std::ifstream&);
 					 swdFileChunk	(const swdFileChunk&);

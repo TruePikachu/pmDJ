@@ -43,12 +43,15 @@ swdFile::swdFile(std::ifstream& file) {
 	file.seekg(myStart+0x50);
 	while(file.tellg()<(myStart+fileLength)) {
 		swdFileChunk::ChunkType type = swdFileChunk::GetType(file);
+		swdFileChunk* newChunk = 0;
 		switch(type) {
-			default:
-				swdFileChunk newChunk(file);
-				chunks.push_back(newChunk);
+			case swdFileChunk::CHUNK_EOD:
+				newChunk = new swdChunkEOD(file);
 				break;
+			default:
+				newChunk = new swdFileChunk(file);
 		}
+		chunks.push_back(newChunk);
 		// Align
 		off_t sizePadding = (0x10-(file.tellg()%0x10))%0x10;
 		char buf[32];
@@ -58,11 +61,35 @@ swdFile::swdFile(std::ifstream& file) {
 		throw logic_error("Extra bytes???");
 }
 
+swdFile::swdFile(const swdFile&other) {
+	operator=(other);
+}
+
+swdFile::~swdFile() {
+	for(vector< swdFileChunk* >::iterator it=chunks.begin();it!=chunks.end();++it)
+		delete *it;
+}
+
+swdFile& swdFile::operator=(swdFile other) {
+	intFilename=other.intFilename;
+	pcmdLength=other.pcmdLength;
+	waviLength=other.waviLength;
+	for(vector< swdFileChunk* >::const_iterator it=other.chunks.begin();it!=other.chunks.end();++it)
+		switch((*it)->GetType()) {
+			case swdFileChunk::CHUNK_EOD:
+				chunks.push_back(new swdChunkEOD((*it)->AsEOD()));
+				break;
+			default:
+				chunks.push_back(new swdFileChunk(**it));
+		}
+	return *this;
+}
+
 std::ostream& operator<<(std::ostream& os, const swdFile& p) {
 	os << "Name: " << p.intFilename << endl;
 	os << "Chunks: (n=" << p.chunks.size() << ")\n";
-	for(vector< swdFileChunk >::const_iterator it=p.chunks.begin();it!=p.chunks.end();++it)
-		os << *it;
+	for(vector< swdFileChunk* >::const_iterator it=p.chunks.begin();it!=p.chunks.end();++it)
+		os << **it;
 	return os;
 }
 
@@ -83,10 +110,10 @@ int swdFile::ChunkCount() const {
 }
 
 const swdFileChunk& swdFile::operator[](int i) const {
-	return chunks[i];
+	return *(chunks[i]);
 }
 
-const std::vector< swdFileChunk >& swdFile::Chunks() const {
+const std::vector< swdFileChunk* >& swdFile::Chunks() const {
 	return chunks;
 }
 
@@ -124,6 +151,9 @@ std::ostream& operator<<(std::ostream&os,const swdFileChunk&p) {
 	sprintf(buf,"@ 0x%08X size 0x%08X",p.chunkOffset,p.dataSize);
 	os << buf;
 	switch(p.GetType()) {
+		case swdFileChunk::CHUNK_EOD:
+			os << " (CHUNK_EOD)\n";
+			break;
 		default:
 			os << endl;
 	}
@@ -172,4 +202,17 @@ swdFileChunk::ChunkType swdFileChunk::GetType(std::ifstream& file) {
 
 swdFileChunk::ChunkType swdFileChunk::GetType() const {
 	return UNKNOWN_CHUNK;
+}
+
+const swdChunkEOD& swdFileChunk::AsEOD() const {
+	return *(swdChunkEOD*)this;
+}
+
+//////////
+
+swdChunkEOD::swdChunkEOD(std::ifstream& file) : swdFileChunk(file) {
+}
+
+swdFileChunk::ChunkType swdChunkEOD::GetType() const {
+	return swdFileChunk::CHUNK_EOD;
 }

@@ -18,16 +18,19 @@ class swdFile {
 		std::string	intFilename;
 		size_t		pcmdLength;
 		size_t		waviLength;
-		std::vector< swdFileChunk >	chunks;
+		std::vector< swdFileChunk* >	chunks;
 	public:
 					 swdFile	(std::ifstream&);
+					 swdFile	(const swdFile&);
+					~swdFile	();
+		swdFile&		operator=	(swdFile);
 		friend std::ostream&	operator<<	(std::ostream&,const swdFile&);
 		std::string		GetFilename	() const;
 		size_t			GetPcmdLength	() const;
 		size_t			GetWaviLength	() const;
 		int			ChunkCount	() const;
 		const swdFileChunk&	operator[]	(int) const;
-		const std::vector< swdFileChunk >& Chunks() const;
+		const std::vector< swdFileChunk* >& Chunks() const;
 };
 
 class swdFileChunk {
@@ -63,4 +66,9 @@ class swdFileChunk {
 		const swdChunkWAVI&	AsWAVI		() const;
 };
 
+class swdChunkEOD : public swdFileChunk {
+	public:
+					 swdChunkEOD	(std::ifstream&);
+		swdFileChunk::ChunkType	GetType		() const;
+};
 #endif

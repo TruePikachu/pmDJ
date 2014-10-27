@@ -79,6 +79,7 @@ class smdEvent {
 				 smdEvent	(std::ifstream&);
 		friend std::ostream& operator<<(std::ostream&, const smdEvent&);
 	public:
+		static size_t	DisplayBytes;
 		EventType	GetType		() const;
 		uint8_t		GetEventCode	() const;
 		int		GetParamCount	() const;

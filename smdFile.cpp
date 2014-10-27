@@ -135,6 +135,7 @@ smdTrack::smdTrack(std::ifstream& file, int instrumentGroup) : instrumentGroup(i
 std::ostream& operator<<(std::ostream& os, const smdTrack& p) {
 	os << "tID=" << p.trackID << ", oID=" << p.outputID << endl;
 	os << "Events: (" << p.events.size() << " count)\n";
+	smdEvent::DisplayBytes = p.LongestCmdSize();
 	int when = 0;
 	char whenBuffer[64];
 	int loopPos = -1;
@@ -202,6 +203,7 @@ size_t smdTrack::LongestCmdSize() const {
 
 //////////
 int smdEvent::prevWaitLength;
+size_t smdEvent::DisplayBytes;
 
 smdEvent::smdEvent(std::ifstream& file) {
 	char readByte;
@@ -292,7 +294,10 @@ std::ostream& operator<<(std::ostream& os, const smdEvent& p) {
 	char buffer[200];
 	sprintf(buffer,"0x%02X",p.eventCode);
 	os << buffer;
-	for(int i=0;i<5;i++)
+	int howMany=smdEvent::DisplayBytes-1;
+	if(howMany<=0)
+		howMany=p.params.size();
+	for(int i=0;i<howMany;i++)
 		if(i>=p.params.size())
 			os << "     ";
 		else {

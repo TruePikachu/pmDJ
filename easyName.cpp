@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -54,8 +55,8 @@ int main(int argc, char *argv[]) {
 		// Make the links
 		stringstream cmdSMD;
 		stringstream cmdSWD;
-		cmdSMD << "ln -s " << argv[2] << '/' << base << ".smd ";
-		cmdSWD << "ln -s " << argv[2] << '/' << base << ".swd ";
+		cmdSMD << "ln -s " << base << ".smd ";
+		cmdSWD << "ln -s " << base << ".swd ";
 		cmdSMD << argv[2] << '/' << name << ".smd";
 		cmdSWD << argv[2] << '/' << name << ".swd";
 		system(cmdSMD.str().c_str());

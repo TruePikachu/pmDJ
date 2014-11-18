@@ -20,10 +20,13 @@ smdMidi& smdMidi::AddToFile(const smdSong& song, int loops, int trim) {
 		int midiChannel = track->GetOutputID();
 		if(midiChannel>=9)
 			midiChannel++;
-		if(midiChannel==16)
+		if(midiChannel==16) {
 			for(midiChannel=0;midiChannel<16;midiChannel++)
 				if((midiChannel!=9) && !song.OutputInUseNotDrum(midiChannel-((midiChannel>9)?1:0)))
 					break;
+			if(midiChannel==16)
+				midiChannel=9;
+		}
 		if(track->IsDrum())
 			midiChannel=9;
 		// Ensure there is a track in the MIDI file corresponding to that
